@@ -1,0 +1,32 @@
+trigger: 
+  branches: 
+    include:
+      - storage
+resources:
+  repositories:
+  - repository: cloud-platform-automation-assets 
+    type: github
+    endpoint: DigitalInnovation
+    name: DigitalInnovation/cloud-platform-automation-assets
+    ref : storage
+variables:
+  tagversion: v1.0.0
+jobs:
+  - job: 'Create_a_Release'
+    pool:
+      name: poc-2-test   
+    steps:
+    - task: GithubRelease@0
+      displayName: 'Create GitHub Release'
+      inputs:
+        gitHubConnection: Testing
+        repositoryName: DigitalInnovation/cloud-platform-automation-assets
+        title: 'Storage-V1.0.0 Alpha'
+        releaseNotes: 'This is an Version1 alpha release for the storage.. please use required templates'
+        target: storage
+        tagSource: manual
+        tag: $(tagversion)
+        addChangeLog: false
+        assets: |                  
+          $(Build.ArtifactStagingDirectory)/*.exe
+          $(Build.ArtifactStagingDirectory)/README.txt 
