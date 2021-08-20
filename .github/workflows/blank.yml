@@ -1,0 +1,33 @@
+on:
+  push:
+    branches:
+    - none
+env:
+  version: ''
+  asset: ''
+jobs:
+  Build_Stage_CreateRelease:
+    name: CreateRelease
+    runs-on: poc-2-test
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        if [[ ${{ env.asset }} == 'redis_cache' ]];then
+          echo "##vso[task.setvariable variable=releasedir]redis_cache"
+          echo "##vso[task.setvariable variable=title]Redis Cache"
+          echo "##vso[task.setvariable variable=tag]redis_cache"
+        fi  
+        if [[ ${{ env.asset }} == 'storage_provisioning' ]];then
+          echo "##vso[task.setvariable variable=releasedir]storage_provisioning"
+          echo "##vso[task.setvariable variable=title]Storage Account"
+          echo "##vso[task.setvariable variable=tag]storage"
+        fi
+      shell: bash
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.tag }}-v${{ env.version }}
+        release_name: ${{ env.title }} - v${{ env.version }}
+                    
